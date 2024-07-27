@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{pluginResources}}">
+  <title>服务器状态</title>
+</head>
+<body>
+  <div class="container">
+    <div class="header">服务器状态</div>
+    <div class="section">
+      <div class="section-title">生电服</div>
+      <div class="info-box">
+        <div class="info">服务器IP: {{data.mcIP}}</div>
+        <div class="info">在线人数: {{data.mcOnlinePlayers}}/{{data.mcMaxPlayers}}</div>
+        <div class="info">游戏版本: {{data.mcVersion}}</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">牡丹亭</div>
+      <div class="info-box">
+        <div class="info">服务器IP: {{data.mdtIP}}</div>
+        <div class="info">当前地图: {{data.mdtMap}} ({{data.mdtGameMode}})</div>
+        <div class="info">在线人数: {{data.mdtPlayers}}</div>
+        <div class="info">当前波数: {{data.mdtWave}}</div>
+        <div class="info">游戏版本: {{data.mdtVersion}}</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">系统信息</div>
+      <div class="info-box">
+        <div class="info">CPU利用率: {{data.cpuUsage}}</div>
+        <div class="info">总内存: {{data.totalMem}} GB</div>
+        <div class="info">已用内存: {{data.usedMem}} GB ({{data.memUsage}}%)</div>
+        <div class="info">空闲内存: {{data.freeMem}} GB</div>
+      </div>
+    </div>
+    <div class="footer">
+      插件版本: 0.4 By NekoXuwen
+    </div>
+  </div>
+</body>
+</html>
