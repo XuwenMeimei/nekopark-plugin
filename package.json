@@ -1,0 +1,9 @@
+{
+  "name": "nekopark",
+  "type": "module",
+  "dependencies": {
+    "node-minecraft-status": "^1.2.0",
+    "ping": "^0.4.4",
+    "systeminformation": "^5.22.11"
+  }
+}

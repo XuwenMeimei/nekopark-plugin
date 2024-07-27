@@ -5,6 +5,7 @@ import DataStream from './lib/DataStream.js';
 import { PingContext } from 'node-minecraft-status';
 import puppeteer from '../../lib/puppeteer/puppeteer.js'
 import path from 'path';
+import fetch from 'node-fetch';
 
 let mcPlayerList = [];
 
@@ -114,8 +115,33 @@ export class nekopark extends plugin {
     }
   }
 
+  async getPingStats(url) {
+    try {
+      const response = await fetch(url);
+      const text = await response.text();
+      const averageLatencyMatch = text.match(/平均延迟：([\d.]+)ms/);
+      const packetLossMatch = text.match(/丢包率：(\d+%)\n/);
+
+      const averageLatency = averageLatencyMatch ? averageLatencyMatch[1] : 'N/A';
+      const packetLoss = packetLossMatch ? packetLossMatch[1] : 'N/A';
+
+      return {
+        averageLatency,
+        packetLoss
+      };
+    } catch (error) {
+      console.error('获取延迟和丢包率时出错:', error);
+      return {
+        averageLatency: 'N/A',
+        packetLoss: 'N/A'
+      };
+    }
+  }
+
   async status(e) {
     try {
+      const pingStatsUrl = 'https://xiaoapi.cn/API/sping.php?url=w.xyc.icu';
+      const pingStats = await this.getPingStats(pingStatsUrl);
 
       const mcIPn = '127.0.0.1:45188';
       const mcResponse = await this.pingServer(mcIPn);
@@ -159,7 +185,9 @@ export class nekopark extends plugin {
         usedMem: usedMem.toFixed(2),
         memUsage,
         freeMem: freeMem.toFixed(2),
-        mcPlayerList: filteredPlayerList.join(" ")
+        mcPlayerList: filteredPlayerList.join(" "),
+        averageLatency: pingStats.averageLatency,
+        packetLoss: pingStats.packetLoss
       };
 
       const currentDirectory = path.resolve();
