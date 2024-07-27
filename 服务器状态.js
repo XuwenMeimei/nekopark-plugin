@@ -6,6 +6,8 @@ import { PingContext } from 'node-minecraft-status';
 import puppeteer from '../../lib/puppeteer/puppeteer.js'
 import path from 'path';
 
+let mcPlayerList = [];
+
 export class nekopark extends plugin {
   constructor() {
     super({
@@ -97,15 +99,24 @@ export class nekopark extends plugin {
     try {
       const response = await client.ping(server).toPromise();
       console.log(response);
+
+      if (response && response.players && response.players.sample) {
+        mcPlayerList = response.players.sample.map(player => player.name);
+      } else {
+        mcPlayerList = [];
+      }
+
       return response;
     } catch (error) {
       console.error(`Ping ${server} 时出错:`, error);
+      mcPlayerList = [];
       return null;
     }
   }
 
   async status(e) {
     try {
+
       const mcIPn = '127.0.0.1:45188';
       const mcResponse = await this.pingServer(mcIPn);
 
@@ -129,6 +140,8 @@ export class nekopark extends plugin {
       const gameModes = ['生存', '沙盒', '进攻', 'PVP'];
       let mdtGameMode = gameModes[mdtInfo.gamemode] || '未知';
 
+      const filteredPlayerList = mcPlayerList.filter(player => player !== "Anonymous Player");
+
       const data = {
         mcIP,
         mcOnlinePlayers,
@@ -145,7 +158,8 @@ export class nekopark extends plugin {
         totalMem: totalMem.toFixed(2),
         usedMem: usedMem.toFixed(2),
         memUsage,
-        freeMem: freeMem.toFixed(2)
+        freeMem: freeMem.toFixed(2),
+        mcPlayerList: filteredPlayerList.join(" ")
       };
 
       const currentDirectory = path.resolve();
