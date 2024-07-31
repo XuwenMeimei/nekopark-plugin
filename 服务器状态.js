@@ -140,6 +140,12 @@ export class nekopark extends plugin {
 
       const server = serverData.result[0];
 
+      const usedMem = server.status.MemUsed;
+      const totalMem = server.host.MemTotal;
+
+      const freeMem = totalMem - usedMem;
+      const MemUsage = (usedMem / totalMem) * 100;
+
       const data = {
         mcIP,
         mcOnlinePlayers,
@@ -153,8 +159,10 @@ export class nekopark extends plugin {
         mdtWave: mdtInfo.wave,
         mdtVersion: mdtInfo.version,
         cpuUsage: server.status.CPU.toFixed(2),
-        usedMem: this.formatBytes(server.status.MemUsed),
-        totalMem: this.formatBytes(server.host.MemTotal),
+        memUsage: MemUsage.toFixed(2),
+        freeMem: this.formatBytes(freeMem),
+        usedMem: this.formatBytes(usedMem),
+        totalMem: this.formatBytes(totalMem),
         inSpeed: this.formatBytes(server.status.NetInSpeed),
         outSpeed: this.formatBytes(server.status.NetOutSpeed),
         mcPlayerList: filteredPlayerList.join(" "),

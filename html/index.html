@@ -31,7 +31,9 @@
       <div class="section-title">系统信息</div>
       <div class="info-box">
         <div class="info">CPU利用率: {{data.cpuUsage}} %</div>
-        <div class="info">内存利用率: {{data.usedMem}} / {{data.totalMem}}</div>
+        <div class="info">内存总量: {{data.totalMem}}</div>
+        <div class="info">已用内存: {{data.usedMem}} ({{data.memUsage}}%)</div>
+        <div class="info">剩余内存: {{data.freeMem}}</div>
         <div class="info">上行: {{data.outSpeed}}/s 下行: {{data.inSpeed}}/s</div>
       </div>
     </div>
