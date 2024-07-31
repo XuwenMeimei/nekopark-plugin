@@ -1,11 +1,10 @@
-import os from 'os';
-import systemInformation from 'systeminformation';
 import dgram from 'dgram';
 import DataStream from './lib/DataStream.js';
 import { PingContext } from 'node-minecraft-status';
 import puppeteer from '../../lib/puppeteer/puppeteer.js'
 import path from 'path';
-import fetch from 'node-fetch';
+import axios from 'axios';
+import fs from 'fs';
 
 let mcPlayerList = [];
 
@@ -23,25 +22,6 @@ export class nekopark extends plugin {
         }
       ]
     });
-  }
-
-  async getCpuLoadAndSpeed() {
-    try {
-      const info = await systemInformation.get({
-        currentLoad: 'currentLoad',
-        cpu: 'speed'
-      });
-
-      return {
-        text: `${info.currentLoad.currentLoad.toFixed(2)}% (${info.cpu.speed}GHz)`,
-        progress: info.currentLoad.currentLoad / 100
-      };
-    } catch (error) {
-      return {
-        text: "0% (0GHz)",
-        progress: 0
-      };
-    }
   }
 
   pingHost(port, ip, callback) {
@@ -115,47 +95,22 @@ export class nekopark extends plugin {
     }
   }
 
-  async getPingStats(url) {
-    try {
-      const response = await fetch(url);
-      const text = await response.text();
-      const averageLatencyMatch = text.match(/平均延迟：([\d.]+)ms/);
-      const packetLossMatch = text.match(/丢包率：(\d+%)\n/);
-
-      const averageLatency = averageLatencyMatch ? averageLatencyMatch[1] : 'N/A';
-      const packetLoss = packetLossMatch ? packetLossMatch[1] : 'N/A';
-
-      return {
-        averageLatency,
-        packetLoss
-      };
-    } catch (error) {
-      console.error('获取延迟和丢包率时出错:', error);
-      return {
-        averageLatency: 'N/A',
-        packetLoss: 'N/A'
-      };
-    }
+  formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
   async status(e) {
     try {
-      const pingStatsUrl = 'https://xiaoapi.cn/API/sping.php?url=w.xyc.icu';
-      const pingStats = await this.getPingStats(pingStatsUrl);
-
       const mcIPn = '127.0.0.1:45188';
       const mcResponse = await this.pingServer(mcIPn);
 
       const mcOnlinePlayers = mcResponse ? mcResponse.players.online : '离线';
       const mcMaxPlayers = mcResponse ? mcResponse.players.max : '离线';
       const mcVersion = mcResponse ? mcResponse.version.name : '离线';
-
-      const totalMem = os.totalmem() / (1024 ** 3);
-      const freeMem = os.freemem() / (1024 ** 3);
-      const usedMem = totalMem - freeMem;
-      const memUsage = ((usedMem / totalMem) * 100).toFixed(2);
-
-      const cpuInfo = await this.getCpuLoadAndSpeed();
 
       const mcIP = 'sr.nekopark.cloud';
       const mdtIP = 'mdt.nekopark.cloud';
@@ -167,6 +122,23 @@ export class nekopark extends plugin {
       let mdtGameMode = gameModes[mdtInfo.gamemode] || '未知';
 
       const filteredPlayerList = mcPlayerList.filter(player => player !== "Anonymous Player");
+
+      const currentDirectory = path.resolve();
+      const tokenFilePath = path.join(currentDirectory, 'plugins', 'nekopark', 'token.json');
+
+      const tokenData = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
+      const token = tokenData.token;
+
+      const serverId = 2;
+      const url = `http://status.xyc.icu/api/v1/server/details?id=${serverId}`;
+      const headers = {
+        'Authorization': token
+      };
+
+      const serverResponse = await axios.get(url, { headers });
+      const serverData = serverResponse.data;
+
+      const server = serverData.result[0];
 
       const data = {
         mcIP,
@@ -180,17 +152,14 @@ export class nekopark extends plugin {
         mdtLimit: mdtInfo.limit,
         mdtWave: mdtInfo.wave,
         mdtVersion: mdtInfo.version,
-        cpuUsage: cpuInfo.text,
-        totalMem: totalMem.toFixed(2),
-        usedMem: usedMem.toFixed(2),
-        memUsage,
-        freeMem: freeMem.toFixed(2),
+        cpuUsage: server.status.CPU.toFixed(2),
+        usedMem: this.formatBytes(server.status.MemUsed),
+        totalMem: this.formatBytes(server.host.MemTotal),
+        inSpeed: this.formatBytes(server.status.NetInSpeed),
+        outSpeed: this.formatBytes(server.status.NetOutSpeed),
         mcPlayerList: filteredPlayerList.join(" "),
-        averageLatency: pingStats.averageLatency,
-        packetLoss: pingStats.packetLoss
       };
 
-      const currentDirectory = path.resolve();
       const htmlFilePath = path.join(currentDirectory, 'plugins', 'nekopark', 'html', 'index.html');
       const cssFilePath = path.join(currentDirectory, 'plugins', 'nekopark', 'html', 'index.css');
 
