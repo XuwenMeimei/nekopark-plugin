@@ -105,7 +105,7 @@ export class nekopark extends plugin {
 
   async status(e) {
     try {
-      const mcIPn = '192.168.3.107:45188';
+      const mcIPn = '192.168.3.129:45188';
       const mcResponse = await this.pingServer(mcIPn);
 
       const mcOnlinePlayers = mcResponse ? mcResponse.players.online : '离线';
@@ -115,7 +115,7 @@ export class nekopark extends plugin {
       const mcIP = 'sr.nekopark.cloud';
       const mdtIP = 'mdt.nekopark.cloud';
 
-      const mdtIPn = '192.168.3.107';
+      const mdtIPn = '192.168.3.129';
       const mdtInfo = await this.pingHostWrapper(mdtIPn);
 
       const gameModes = ['生存', '沙盒', '进攻', 'PVP'];
@@ -146,6 +146,10 @@ export class nekopark extends plugin {
       const freeMem = totalMem - usedMem;
       const MemUsage = (usedMem / totalMem) * 100;
 
+      const mapsnapResponse = await axios.get('http://w.xyc.icu:45200/api/serverStatus');
+      const mapsnapData = mapsnapResponse.data;
+      const mapsnap = mapsnapData.mapsnap;
+
       const data = {
         mcIP,
         mcOnlinePlayers,
@@ -168,6 +172,7 @@ export class nekopark extends plugin {
         inAll: this.formatBytes(server.status.NetInTransfer),
         outAll: this.formatBytes(server.status.NetOutTransfer),
         mcPlayerList: filteredPlayerList.join(" "),
+        mapsnap,
       };
 
       const htmlFilePath = path.join(currentDirectory, 'plugins', 'nekopark', 'html', 'index.html');
