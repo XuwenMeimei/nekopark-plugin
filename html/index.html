@@ -23,9 +23,12 @@
       <div class="info-box flex-container">
         <div class="text-content">
           <div class="info">服务器IP: {{data.mdtIP}}</div>
+          <div class="info">游戏版本: {{data.mdtVersion}}</div>
+          <div class="info">当前地图ID: {{data.mapid}}</div>
           <div class="info">当前地图: {{data.mdtMap}} ({{data.mdtGameMode}})</div>
           <div class="info">当前波数: {{data.mdtWave}} 在线人数: {{data.mdtPlayers}}</div>
-          <div class="info">游戏版本: {{data.mdtVersion}}</div>
+          <div class="info">总单位数: {{data.unit}}</div>
+          <div class="info">内存|TPS: {{data.ram}}|{{data.tps}}</div>
         </div>
         <div class="image-content">
           <img src="data:image/png;base64,{{data.mapsnap}}" style="max-width: 100%; height: auto;">

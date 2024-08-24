@@ -148,6 +148,10 @@ export class nekopark extends plugin {
 
       const apiResponse = await axios.get('http://w.xyc.icu:45200/api/serverStatus');
       const mapsnap = apiResponse.data.mapSnap;
+      const mapid = apiResponse.data.mapId;
+      const ram = apiResponse.data.Ram;
+      const tps = apiResponse.data.tps;
+      const unit = apiResponse.data.allUnit;
 
       const data = {
         mcIP,
@@ -172,6 +176,10 @@ export class nekopark extends plugin {
         outAll: this.formatBytes(server.status.NetOutTransfer),
         mcPlayerList: filteredPlayerList.join(" "),
         mapsnap,
+        ram,
+        mapid,
+        tps,
+        unit,
       };
 
       const htmlFilePath = path.join(currentDirectory, 'plugins', 'nekopark', 'html', 'index.html');
