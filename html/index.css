@@ -45,6 +45,29 @@ body {
     margin-top: 10px;
 }
 
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.text-content {
+    flex: 1;
+}
+
+.image-content {
+    margin-left: 20px;
+    max-width: 45%;
+    flex-shrink: 0;
+}
+
+.image-content img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
 .info {
     margin: 5px 0;
 }
