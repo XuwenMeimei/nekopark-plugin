@@ -105,7 +105,7 @@ export class nekopark extends plugin {
 
   async status(e) {
     try {
-      const mcIPn = '127.0.0.1:45188';
+      const mcIPn = '192.168.3.107:45188';
       const mcResponse = await this.pingServer(mcIPn);
 
       const mcOnlinePlayers = mcResponse ? mcResponse.players.online : '离线';
@@ -115,7 +115,7 @@ export class nekopark extends plugin {
       const mcIP = 'sr.nekopark.cloud';
       const mdtIP = 'mdt.nekopark.cloud';
 
-      const mdtIPn = '127.0.0.1';
+      const mdtIPn = '192.168.3.107';
       const mdtInfo = await this.pingHostWrapper(mdtIPn);
 
       const gameModes = ['生存', '沙盒', '进攻', 'PVP'];
@@ -165,6 +165,8 @@ export class nekopark extends plugin {
         totalMem: this.formatBytes(totalMem),
         inSpeed: this.formatBytes(server.status.NetInSpeed),
         outSpeed: this.formatBytes(server.status.NetOutSpeed),
+        inAll: this.formatBytes(server.status.NetInTransfer),
+        outAll: this.formatBytes(server.status.NetOutTransfer),
         mcPlayerList: filteredPlayerList.join(" "),
       };
 
